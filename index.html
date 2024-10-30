@@ -6,6 +6,7 @@
     <title>CryptoTrade Pro</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
@@ -83,7 +84,7 @@ a{
     <p>WARNING: This product contains nicotine. Nicotine is an addictive chemical.</p>
     </div>
     </div>
-    <!-- <div id="intro">
+    <div id="intro">
         <div class="scene">
             <div class="cube">
                 <div class="cube__face cube__face--front"></div>
@@ -94,7 +95,7 @@ a{
                 <div class="cube__face cube__face--bottom"></div>
             </div>
         </div>
-    </div> -->
+    </div>
     <!-- Navigation -->
    <!-- Navigation -->
 <nav class="bg-black py-4">
@@ -199,7 +200,6 @@ a{
                 <a href="#product" class="bg-gradient-to-r from-[#DAA520] to-[#FFD700] text-black px-8 py-3 rounded-full hover:from-[#FFD700] hover:to-[#DAA520] transition-all duration-300 inline-block font-medium">
                     Buy Now
                 </a>
-                
                 <p class="text-yellow-200/80 mt-4">Limited time offer 40% Discount</p>
             </div>
         </div>
@@ -270,11 +270,11 @@ a{
                             <h3 class="text-white font-medium font-serif">{{title}}</h3>
                             <p class="text-[#FFB800] text-lg font-bold mt-2">{{price}}</p>
                             <button 
-                                onclick="openWhatsApp('{{title}}', '{{price}}')" 
-                                class="font-serif mt-4 bg-[#FFB800] text-black py-2 px-4 rounded hover:bg-[#FFD700]"
-                            >
-                                ADD TO CART
-                            </button>
+                            onclick="addToCart('{{title}}', '{{price}}', '{{image}}')" 
+                            class="font-serif mt-4 bg-[#FFB800] text-black py-2 px-4 rounded hover:bg-[#FFD700]"
+                        >
+                            ADD TO CART
+                        </button>
                             <a href="#" class="text-center text-sm text-gray-400 mt-2 hover:text-[#FFB800]">DETAILS</a>
                         </div>
                     </div>
@@ -453,7 +453,172 @@ a{
           </div>
         </div>
       </footer>
-      
+       <!-- modal popup add to cart -->
+        <!-- Add this modal HTML structure at the end of your body tag -->
+<div id="cartModal" class=" text-black fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">My Cart</h2>
+                <button onclick="closeCart()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="cartItems" class="space-y-4">
+                <!-- Cart items will be added here dynamically -->
+            </div>
+
+            <div class="mt-6">
+                <div class="border-t pt-4">
+                    <h3 class="font-medium mb-3">Choose shipping mode:</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="shipping" value="free" checked class="text-[#FFB800]">
+                            <span class="ml-2">Free policy (≥ 2 days) • FREE</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="shipping" value="express" class="text-[#FFB800]">
+                            <span class="ml-2">Delivery in 2 days • $9.99</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="border-t mt-4 pt-4">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600 mt-2">
+                        <span>Shipping</span>
+                        <span id="shippingCost">Free</span>
+                    </div>
+                    <div class="flex justify-between font-bold mt-2">
+                        <span>Total</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>
+
+                <button onclick="checkout()" class="w-full bg-[#FFB800] text-black py-3 rounded mt-6 hover:bg-[#FFD700] font-serif">
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this JavaScript code in a separate file or script tag -->
+<script>
+let cart = [];
+
+// Replace your existing openWhatsApp function with this
+function addToCart(title, price, image) {
+    const existingItem = cart.find(item => item.title === title);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            title,
+            price: parseFloat(price),
+            image,
+            quantity: 1
+        });
+    }
+    
+    updateCartDisplay();
+    openCart();
+}
+
+function openCart() {
+    const modal = document.getElementById('cartModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeCart() {
+    const modal = document.getElementById('cartModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function updateCartDisplay() {
+    const cartContainer = document.getElementById('cartItems');
+    cartContainer.innerHTML = '';
+    
+    cart.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'flex items-center justify-between border-b pb-4';
+        itemElement.innerHTML = `
+            <div class="flex items-center">
+                <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded">
+                <div class="ml-4">
+                    <h4 class="font-medium">${item.title}</h4>
+                    <p class="text-[#FFB800] font-bold">$${item.price}</p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="flex items-center border rounded mr-4">
+                    <button onclick="updateQuantity('${item.title}', -1)" class="px-3 py-1 hover:bg-gray-100">-</button>
+                    <span class="px-3">${item.quantity}</span>
+                    <button onclick="updateQuantity('${item.title}', 1)" class="px-3 py-1 hover:bg-gray-100">+</button>
+                </div>
+                <p class="font-bold w-24 text-right">$${(item.price * item.quantity).toFixed(2)}</p>
+            </div>
+        `;
+        cartContainer.appendChild(itemElement);
+    });
+    
+    updateTotals();
+}
+
+function updateQuantity(title, change) {
+    const item = cart.find(item => item.title === title);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            cart = cart.filter(cartItem => cartItem.title !== title);
+        }
+        updateCartDisplay();
+    }
+}
+
+function updateTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shippingCost = document.querySelector('input[name="shipping"]:checked').value === 'express' ? 9.99 : 0;
+    const total = subtotal + shippingCost;
+
+    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('shippingCost').textContent = shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`;
+    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+}
+
+function checkout() {
+    // Implement your checkout logic here
+    // You could redirect to a checkout page or open WhatsApp
+    const items = cart.map(item => `${item.quantity}x ${item.title}`).join('\n');
+    const total = document.getElementById('total').textContent;
+    const message = `Order Summary:\n${items}\nTotal: ${total}`;
+    // You can use this to open WhatsApp or handle checkout however you prefer
+    console.log(message);
+}
+
+// Add event listeners for shipping radio buttons
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+        radio.addEventListener('change', updateTotals);
+    });
+});
+
+// Close modal when clicking outside
+document.getElementById('cartModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('cartModal')) {
+        closeCart();
+    }
+});
+</script>
     <script>
         
 document.addEventListener('DOMContentLoaded', () => {
@@ -479,27 +644,25 @@ window.onload = () => {
         }, 2000);
     }, 3000);
 };
+
+    </script>
+      <script>
+        const stripe = Stripe('pk_test_51QEqnAJKMddzQAATboOGhtNA4ahJul8LBLyEdMAgthIm8cVbLLGcyRGZgf4ZlRnfHj9EX7Z76FfTOogXnV40Sqzr00VxA1BVUo'); // Replace with your Stripe Publishable Key
+    
+        document.getElementById('checkout-button').addEventListener('click', async () => {
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+            });
+            const session = await response.json();
+            const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+            if (error) {
+                console.error("Stripe Checkout error:", error);
+            }
+        });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-<script src="product.js"></script>
-
-<script>
-    function openWhatsApp(title, price) {
-        // Replace this with your WhatsApp number
-        const phoneNumber = "923272696412";
-        
-        // Create the dynamic message
-        const message = `Hey, I came from your website and I want to buy ${title} which is ${price} dollars. Please let me know if we can discuss this.`;
-        
-        // Encode the message for URL
-        const encodedMessage = encodeURIComponent(message);
-        
-        // Create WhatsApp URL
-        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        // Open WhatsApp in a new window
-        window.open(whatsappURL, '_blank');
-    }
-    </script>
+    <script src="/api/create-checkout-session.js"></script>
+    <script src="product.js"></script>
+    <script src="server.js"></script>
 </body>
 </html>
