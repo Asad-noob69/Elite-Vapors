@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CryptoTrade Pro</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
@@ -325,8 +325,8 @@ a{
     {{/each}}
 </script><!-- Popup Template for Product -->
 <script id="product-popup-template" type="text/x-handlebars-template">
-    <div id="product-popup" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white w-full max-w-4xl rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 scale-95">
+    <div id="product-popup" class=" text-black fixed inset-0 bg-black/50 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class=" text-black bg-white w-full max-w-4xl rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 scale-95">
             <div class="relative p-6 md:p-8">
                 <!-- Close Button -->
                 <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onclick="closePopup()">
@@ -646,23 +646,38 @@ window.onload = () => {
 };
 
     </script>
-      <script>
-        const stripe = Stripe('pk_test_51QEqnAJKMddzQAATboOGhtNA4ahJul8LBLyEdMAgthIm8cVbLLGcyRGZgf4ZlRnfHj9EX7Z76FfTOogXnV40Sqzr00VxA1BVUo'); // Replace with your Stripe Publishable Key
-    
-        document.getElementById('checkout-button').addEventListener('click', async () => {
-            const response = await fetch('/api/create-checkout-session', {
-                method: 'POST',
-            });
-            const session = await response.json();
-            const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
-            if (error) {
-                console.error("Stripe Checkout error:", error);
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+    const checkoutButton = document.getElementById('checkout-button');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                const session = await response.json();
+                if (session.error) {
+                    console.error("Error creating checkout session:", session.error);
+                    return;
+                }
+
+                const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+                if (error) {
+                    console.error("Stripe Checkout error:", error);
+                }
+            } catch (error) {
+                console.error("Checkout error:", error);
             }
         });
-    </script>
+    }
+});
+      </script>
+      
+     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script src="/api/create-checkout-session.js"></script>
     <script src="product.js"></script>
-    <script src="server.js"></script>
 </body>
 </html>
