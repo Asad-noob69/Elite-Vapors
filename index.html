@@ -269,12 +269,14 @@ a{
                         <div class="mt-4 flex flex-col flex-grow">
                             <h3 class="text-white font-medium font-serif">{{title}}</h3>
                             <p class="text-[#FFB800] text-lg font-bold mt-2">{{price}}</p>
-                            <button 
-                            onclick="addToCart('{{title}}', '{{price}}', '{{image}}')" 
+                            <button  
+                            onclick="addToCart({ name: '{{title}}', price: '{{price}}', image: '{{image}}' })"
                             class="font-serif mt-4 bg-[#FFB800] text-black py-2 px-4 rounded hover:bg-[#FFD700]"
                         >
                             ADD TO CART
                         </button>
+                        
+                        
                             <a href="#" class="text-center text-sm text-gray-400 mt-2 hover:text-[#FFB800]">DETAILS</a>
                         </div>
                     </div>
@@ -501,7 +503,7 @@ a{
                     </div>
                 </div>
 
-                <button onclick="checkout()" class="w-full bg-[#FFB800] text-black py-3 rounded mt-6 hover:bg-[#FFD700] font-serif">
+                <button onclick="checkout()" id="checkout-button" class="w-full bg-[#FFB800] text-black py-3 rounded mt-6 hover:bg-[#FFD700] font-serif">
                     Checkout
                 </button>
             </div>
@@ -647,32 +649,51 @@ window.onload = () => {
 
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-    const checkoutButton = document.getElementById('checkout-button');
-    if (checkoutButton) {
-        checkoutButton.addEventListener('click', async () => {
-            try {
-                const response = await fetch('/api/create-checkout-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                });
+    document.getElementById("checkout-button").addEventListener("click", async () => {
+  // Send cartItems to the backend
+  const response = await fetch("/api/create-checkout-session", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ cartItems }), // Pass cartItems to backend
+  });
 
-                const session = await response.json();
-                if (session.error) {
-                    console.error("Error creating checkout session:", session.error);
-                    return;
-                }
+  if (!response.ok) {
+    console.error("Failed to create checkout session");
+    return;
+  }
 
-                const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
-                if (error) {
-                    console.error("Stripe Checkout error:", error);
-                }
-            } catch (error) {
-                console.error("Checkout error:", error);
-            }
-        });
+  const session = await response.json();
+
+  // Redirect to Stripe Checkout
+  const stripe = Stripe("pk_test_51QEqnAJKMddzQAATboOGhtNA4ahJul8LBLyEdMAgthIm8cVbLLGcyRGZgf4ZlRnfHj9EX7Z76FfTOogXnV40Sqzr00VxA1BVUo");
+  stripe.redirectToCheckout({ sessionId: session.id }).then((result) => {
+    if (result.error) {
+      console.error(result.error.message);
     }
+  });
 });
+
+async function redirectToCheckout() {
+    const response = await fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: cartItems })
+    });
+    const session = await response.json();
+
+    if (session.error) {
+        console.error('Error creating checkout session:', session.error);
+        return;
+    }
+
+    // Redirect to Stripe checkout
+    window.location.href = session.url;
+}
+
       </script>
       
      

@@ -1,26 +1,30 @@
-// server.js or create-checkout-session.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const express = require('express');
-const app = express();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Secret key from environment variables
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).end('Method Not Allowed');
+  }
 
-// Make sure to parse JSON bodies
-app.use(express.json());
-
-app.post('/api/create-checkout-session', async (req, res) => {
   try {
+    const { cartItems } = req.body; // Receive cart data from frontend
+
+    // Map cart items to the Stripe line_items format
+    const lineItems = cartItems.map((item) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: item.name,
+        },
+        unit_amount: parseFloat(item.price.replace('Rs.', '')) * 100, // Convert price to cents
+      },
+      quantity: item.quantity,
+    }));
+
+    // Create the checkout session with dynamic line items
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: { name: 'Your Product Name' },
-            unit_amount: 2000, // Amount in cents ($20)
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${req.headers.origin}/success.html`,
       cancel_url: `${req.headers.origin}/cancel.html`,
@@ -30,8 +34,4 @@ app.post('/api/create-checkout-session', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-
-// Only if this is your main server file
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};

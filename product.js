@@ -1,3 +1,21 @@
+const cartItems = [];
+
+// Function to add item to cart
+function addToCart(product) {
+  // Check if the product is already in the cart
+  const existingItem = cartItems.find(item => item.name === product.name);
+
+  if (existingItem) {
+    // If it exists, just increase the quantity
+    existingItem.quantity += 1;
+  } else {
+    // If not, add it to the cart with quantity 1
+    cartItems.push({ ...product, quantity: 1 });
+  }
+
+  console.log(cartItems); // Check the updated cart items in the console
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     // Sample product data
     const products = [
