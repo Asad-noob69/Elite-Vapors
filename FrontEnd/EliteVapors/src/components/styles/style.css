@@ -66,7 +66,7 @@ body {
     position: absolute;
     width: 200px;  /* Same as scene width */
     height: 200px; /* Same as scene height */
-    background: url('/src/assets//images/intro.jpg') center/cover no-repeat;
+    background: url('/images/intro.jpg') center/cover no-repeat;
 }
 
 .cube__face--front  { transform: rotateY(  0deg) translateZ(100px); }  /* Half of the new scene size */

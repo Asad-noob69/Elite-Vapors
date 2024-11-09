@@ -7,7 +7,7 @@ const MainContent = () => {
       <section
         className="hero-section container mx-auto px-4 py-20 text-center relative min-h-[80vh] flex flex-col items-center justify-center"
         style={{
-          backgroundImage: "url('/src/assets/images/crown2.jpg')",
+          backgroundImage: "url('/images/crown2.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -65,7 +65,7 @@ const MainContent = () => {
 
           <div className="md:w-1/2 mt-6 md:mt-0">
             <video
-              src="/src/assets//images/rotating.mp4"
+              src="/images/rotating.mp4"
               alt="Premium Device"
               className="w-full h-auto rounded-lg"
               autoPlay
@@ -109,8 +109,8 @@ const MainContent = () => {
 
           {/* Right Image Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <img src="/src/assets//images/long.jpg" alt="Vape Image 1" className="rounded-lg shadow-lg" />
-            <img src="/src/assets//images/long2.jpg" alt="Vape Image 2" className="rounded-lg shadow-lg" />
+            <img src="/images/long.jpg" alt="Vape Image 1" className="rounded-lg shadow-lg" />
+            <img src="/images/long2.jpg" alt="Vape Image 2" className="rounded-lg shadow-lg" />
           </div>
         </div>
       </section>

@@ -7,7 +7,7 @@ const Footer = () => {
         
         {/* Company Information */}
         <div>
-          <img src="/src/assets/images/logo.png" alt="IGNITE Logo" className="mb-4 w-24 h-24" />
+          <img src="/images/logo.png" alt="IGNITE Logo" className="mb-4 w-24 h-24" />
           <p className="font-bold">Sulta & Co limited.</p>
           <p>3308 Towerwood Drive<br /> Farmers’ Branch, TX 75234-2317<br /> United States</p>
           <p className="mt-4">675 Cochrane Drive, East Tower, Suite 639<br /> Markham, Ontario L3R 0B8<br /> Canada</p>
