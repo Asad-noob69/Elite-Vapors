@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShoppingCart as CartIcon, X } from 'lucide-react';
-import logo from '../assets/images/logo.png';
+import logo from '/images/logo.png';
 import ShoppingCart from './ShoppingCart1';
 
 function Header() {
