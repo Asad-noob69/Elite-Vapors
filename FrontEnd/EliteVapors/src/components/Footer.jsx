@@ -2,20 +2,20 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-10 font-arial">
-      <div className="container mx-auto flex justify-between items-start">
+    <footer style={{ backgroundColor: '#244E4D' }} className="text-white py-10 font-serif">
+      <div className="container  mx-auto flex justify-between items-start">
         
         {/* Company Information */}
         <div>
-          <img src="/images/logo.png" alt="IGNITE Logo" className="mb-4 w-24 h-24" />
-          <p className="font-bold">Sulta & Co limited.</p>
-          <p>3308 Towerwood Drive<br /> Farmers’ Branch, TX 75234-2317<br /> United States</p>
+          <img src="/images/favicon.png" alt="Elite-Vapors Premium Logo" className="mb-4 w-32 h-32" />
+          <h2 className="font-bold text-2xl">Elite-Vapors Premium</h2>
+          <p className="mt-2">3308 Towerwood Drive<br /> Farmers' Branch, TX 75234-2317<br /> United States</p>
           <p className="mt-4">675 Cochrane Drive, East Tower, Suite 639<br /> Markham, Ontario L3R 0B8<br /> Canada</p>
         </div>
         
         {/* Shop Links */}
         <div>
-          <h4 className="font-bold mb-4">SHOP</h4>
+          <h4 className="font-bold mb-4 text-xl">SHOP</h4>
           <ul>
             <li><a href="#" className="hover:text-gray-400">ABOUT US</a></li>
             <li><a href="#" className="hover:text-gray-400">NICOTINE</a></li>
@@ -26,7 +26,7 @@ const Footer = () => {
         
         {/* Customer Service Links */}
         <div>
-          <h4 className="font-bold mb-4">CUSTOMER SERVICE</h4>
+          <h4 className="font-bold mb-4 text-xl">CUSTOMER SERVICE</h4>
           <ul>
             <li><a href="#" className="hover:text-gray-400">PRIVACY POLICY</a></li>
             <li><a href="#" className="hover:text-gray-400">TERMS OF SERVICE</a></li>
