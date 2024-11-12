@@ -1,14 +1,16 @@
-import React from 'react';
+// ShoppingCart.jsx
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
-import { loadStripe } from '@stripe/stripe-js'; // Add this import
+import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize Stripe with your publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const ShoppingCart = () => {
   const { cart, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const calculateTotals = () => {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -28,44 +30,61 @@ const ShoppingCart = () => {
 
   const { cartTotal, tax, delivery, promoDiscount, subtotal } = calculateTotals();
 
- // In your ShoppingCart.jsx
-const handleCheckout = async () => {
-  try {
-    const stripe = await stripePromise;
-    if (!stripe) throw new Error('Stripe failed to initialize');
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    const response = await fetch('/api/createCheckoutSession', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        cartItems: cart.map(item => ({
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity || 1,
-          image: item.image // if you have images
-        }))
-      })
-    });
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe failed to initialize');
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Network response was not ok');
+      // Debug log
+      console.log('Sending cart items:', cart);
+
+      const response = await fetch('/api/createCheckoutSession', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cartItems: cart.map(item => ({
+            name: item.name,
+            price: parseFloat(item.price), // Ensure price is a number
+            quantity: item.quantity || 1,
+            image: item.image
+          }))
+        })
+      });
+
+      // Debug log
+      const rawResponse = await response.text();
+      console.log('Raw API Response:', rawResponse);
+
+      if (!response.ok) {
+        try {
+          const errorData = JSON.parse(rawResponse);
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        } catch (e) {
+          throw new Error(`API Error: ${rawResponse || response.status}`);
+        }
+      }
+
+      const data = JSON.parse(rawResponse);
+      
+      const result = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+    } catch (error) {
+      console.error('Error creating Stripe checkout session:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-
-    const { sessionId } = await response.json();
-    const { error } = await stripe.redirectToCheckout({ sessionId });
-
-    if (error) {
-      console.error('Stripe redirect error:', error);
-      throw new Error(error.message);
-    }
-  } catch (error) {
-    console.error('Error creating Stripe checkout session:', error);
-    alert('Error creating checkout session: ' + error.message);
-  }
-};
+  };
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-2xl font-semibold mb-4">Shopping Cart</h1>
