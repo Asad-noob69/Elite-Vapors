@@ -40,8 +40,8 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      success_url: `${process.env.VITE_APP_URL}/success`,
-      cancel_url: `${process.env.VITE_APP_URL}/cancel`,
+      success_url: `${process.env.VITE_APP_URL}/success.html`,
+      cancel_url: `${process.env.VITE_APP_URL}/cancel.html`,
     });
 
     return res.status(200).json({ sessionId: session.id });
