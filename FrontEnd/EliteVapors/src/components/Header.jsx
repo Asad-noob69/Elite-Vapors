@@ -43,9 +43,9 @@ function Header() {
 
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex space-x-12" style={{ fontFamily: 'Manrope' }}>
-              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">How it works</a>
-              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">Recent Work</a>
-              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">Pricing</a>
+              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">Home</a>
+              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">Devices & Accessories</a>
+              <a href="#" className="text-white hover:text-[#FFB800] transition-colors">Vape FAQ</a>
               <a href="#" className="text-white hover:text-[#FFB800] transition-colors">About Me</a>
             </div>
 
@@ -74,9 +74,9 @@ function Header() {
         {/* Mobile Navigation Links */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-black text-center space-y-4 py-4" style={{ fontFamily: 'Manrope' }}>
-            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">How it works</a>
-            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">Recent Work</a>
-            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">Pricing</a>
+            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">Home</a>
+            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">Devices & Accessories</a>
+            <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">Vape FAQ</a>
             <a href="#" className="text-white hover:text-[#FFB800] transition-colors block">About Me</a>
             
             {/* Cart Icon in Mobile Menu */}
