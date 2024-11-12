@@ -49,9 +49,9 @@ const ShoppingCart = () => {
         body: JSON.stringify({
           cartItems: cart.map(item => ({
             name: item.name,
-            price: parseFloat(item.price), // Ensure price is a number
+            price: parseFloat(item.price),
             quantity: item.quantity || 1,
-            image: item.image
+            image: `https://elite-vapors.vercel.app${item.image}` // Convert relative to absolute URL
           }))
         })
       });

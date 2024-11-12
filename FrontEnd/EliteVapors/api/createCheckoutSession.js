@@ -15,19 +15,30 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid cart items' });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: cartItems.map(item => ({
+    // Create line items with proper URL handling
+    const line_items = cartItems.map(item => {
+      const productData = {
+        name: item.name,
+      };
+
+      // Only add images if the URL is absolute
+      if (item.image && (item.image.startsWith('http://') || item.image.startsWith('https://'))) {
+        productData.images = [item.image];
+      }
+
+      return {
         price_data: {
           currency: 'usd',
-          product_data: {
-            name: item.name,
-            images: item.image ? [item.image] : [],
-          },
+          product_data: productData,
           unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity || 1,
-      })),
+      };
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items,
       mode: 'payment',
       success_url: `${process.env.VITE_APP_URL}/success`,
       cancel_url: `${process.env.VITE_APP_URL}/cancel`,
