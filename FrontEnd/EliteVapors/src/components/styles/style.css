@@ -12,21 +12,23 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
-}
+    width: 14px;
+    background: #000000;
+    border-left: 1px solid rgba(255, 215, 0, 0.1);
+  }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #76a8a9;
+    background:  linear-gradient(40deg, #DAA520 0%, #FFD700 50%, #000000 100%);
+    border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #6e9d9e;
+    background:  linear-gradient(40deg, #DAA520 0%, #FFD700 50%, #080808 100%);
 }
-
 @layer components {
     .menu__link::before {
         content: "";
